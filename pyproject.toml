@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "homework"
 version = "0.1.0"
-description = ""
-authors = ["TV <you@example.com>"]
+description = "homework_git"
+authors = "dic555@list.ru"
 readme = "README.md"
 packages = [
     { include = "masks", from = "src" },
@@ -25,7 +25,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.mypy]
 disallow_untyped_defs = true
 warn_return_any = true
-exclude = .venv
+exclude =.venv
 
 [tool.black]
 # Максимальная длина строки
