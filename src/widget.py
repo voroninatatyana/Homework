@@ -1,5 +1,5 @@
-from .masks import get_mask_account  # относительный импорт
-from .masks import get_mask_card_number
+from src.masks import get_mask_account
+from src.masks import get_mask_card_number
 
 
 def mask_account_card (full_data: str) -> str:
@@ -9,14 +9,12 @@ def mask_account_card (full_data: str) -> str:
         - Счет: "**XXXX" (последние 4 цифры)"""
     #Извлекаем все цифры из строки
     mask_digits = ''.join([char for char in full_data if char.isdigit()])
-    # Определяем тип по наличию ключевых слов
-    #if mask_digits not digits:
-     #   raise ValueError("Не найден номер карты/счета")
+
     if "счет" in full_data.lower():
         # Обработка счета
         if len(mask_digits) < 4:
             raise ValueError("Номер счета должен содержать минимум 4 цифры")
-        masked_number = get_mask_card_number(mask_digits)
+        masked_number = get_mask_account (mask_digits)
         # Сохраняем оригинальное название "Счет"
         account_prefix = "Счет"
         for word in full_data.split():
@@ -45,3 +43,4 @@ def get_date_safe(iso_date_str: str) -> str | None:
         return date_obj.strftime("%d.%m.%Y")
     except ValueError:
         return None
+
