@@ -24,11 +24,8 @@
 #### format_payment_info(info: str) -> str
 Автоматически определяет (счет или карта) и форматирует номер.
 ## Установка
-1. Склонируйте репозиторий:
-```
-git clone [репозиторий](git@github.com:voroninatatyana/Homework.git)
-```
-3. Установите зависимости:
+1. Склонируйте [репозиторий](git@github.com:voroninatatyana/Homework.git)
+2. Установите зависимости:
 ```
 pip install -r requirements.txt
 ```
