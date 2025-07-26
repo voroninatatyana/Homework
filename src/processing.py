@@ -9,9 +9,10 @@ def filter_by_state(transactions: list[dict], state: str = 'EXECUTED') -> list[d
             filtered_transactions.append(transaction)
     return filtered_transactions
 
+
 def sort_by_date(transactions: list[dict], reverse: bool = True) -> list[dict]:
     """
     Сортирует список словарей по дате (ключ 'date').
     """
-    return sorted(transactions, key=lambda x: x['date'], reverse=reverse)
 
+    return sorted(transactions, key=lambda x: x['date'], reverse=reverse)

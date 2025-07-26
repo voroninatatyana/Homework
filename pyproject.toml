@@ -26,6 +26,7 @@ build-backend = "poetry.core.masonry.api"
 disallow_untyped_defs = true
 warn_return_any = true
 exclude =.venv
+exclude = "README.md"
 
 [tool.black]
 # Максимальная длина строки
