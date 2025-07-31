@@ -1,3 +1,4 @@
+from datetime import datetime
 def filter_by_state(transactions: list[dict], state: str = 'EXECUTED') -> list[dict]:
     """
     Фильтрует список словарей по значению ключа 'state' (через цикл).
@@ -10,9 +11,22 @@ def filter_by_state(transactions: list[dict], state: str = 'EXECUTED') -> list[d
     return filtered_transactions
 
 
+"""функция явно проверяет валидность дат"""
+def validate_date(date_str: str) -> bool:
+    try:
+        datetime.fromisoformat(date_str)
+        return True
+    except ValueError:
+        return False
+
+
 def sort_by_date(transactions: list[dict], reverse: bool = True) -> list[dict]:
     """
-    Сортирует список словарей по дате (ключ 'date').
+    Сортировка транзакций по дате с проверкой валидности дат.
     """
 
-    return sorted(transactions, key=lambda x: x['date'], reverse=reverse)
+    return sorted(
+        [t for t in transactions if "date" in t and validate_date(t["date"])],
+        key=lambda x: datetime.fromisoformat(x["date"]),
+        reverse=reverse
+    )
