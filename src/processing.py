@@ -14,10 +14,18 @@ def filter_by_state(transactions: list[dict], state: str = 'EXECUTED') -> list[d
 """функция явно проверяет валидность дат"""
 def validate_date(date_str: str) -> bool:
     try:
-        datetime.fromisoformat(date_str)
-        return True
+        return datetime.fromisoformat(date_str)
     except ValueError:
-        return False
+        raise ValueError(f"Invalid date format: {date_str}")
+    valid_transactions = []
+    for t in transactions:
+        if "date" not in t:
+            continue
+        try:
+            parse_date(t["date"])  # Проверяем валидность даты
+            valid_transactions.append(t)
+        except ValueError:
+            continue
 
 
 def sort_by_date(transactions: list[dict], reverse: bool = True) -> list[dict]:
