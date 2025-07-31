@@ -21,7 +21,7 @@ def mask_account_card(data: str) -> str:
         raise TypeError("Только строковый ввод")
 
     # Удаляем лишние пробелы и разделяем на части
-    cleaned_data = ' '.join(data.split())
+    cleaned_data = " ".join(data.split())
     parts = cleaned_data.split()
 
     if not parts:
@@ -46,7 +46,7 @@ def mask_account_card(data: str) -> str:
             raise ValueError("Номер карты должен содержать 16 цифр")
 
         # Форматирование карты
-        name = ' '.join(parts[:-1]) if len(parts) > 1 else ''
+        name = " ".join(parts[:-1]) if len(parts) > 1 else ""
         masked_number = f"{number[:4]} {number[4:6]}** **** {number[-4:]}"
         return f"{name} {masked_number}" if name else masked_number
 
