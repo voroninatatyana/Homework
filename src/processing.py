@@ -1,4 +1,7 @@
 from datetime import datetime
+from typing import Any
+
+
 def filter_by_state(transactions: list[dict], state: str = 'EXECUTED') -> list[dict]:
     """
     Фильтрует список словарей по значению ключа 'state' (через цикл).
@@ -12,12 +15,12 @@ def filter_by_state(transactions: list[dict], state: str = 'EXECUTED') -> list[d
 
 
 """функция явно проверяет валидность дат"""
-def validate_date(date_str: str) -> bool:
+def validate_date(date_str: str) -> datetime:
     try:
         return datetime.fromisoformat(date_str)
     except ValueError:
         raise ValueError(f"Invalid date format: {date_str}")
-    valid_transactions = []
+    valid_transactions: list[Any] = []
     for t in transactions:
         if "date" not in t:
             continue
