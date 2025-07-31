@@ -1,53 +1,60 @@
 from datetime import datetime
 
-from src.masks import get_mask_account, get_mask_card_number
 
+def mask_account_card(data: str) -> str:
+    """Маскирует номер карты или счета.
 
-def mask_account_card(full_data: str | None) -> str | None:
-    """Маскирует номер карты или счета в зависимости от типа."""
+    Для карт: XXXX XX** **** XXXX (16 цифр)
+    Для счетов: **XXXX (последние 4 цифры)
 
-    # Извлекаем все цифры из строки
+    Args:
+        data: Строка формата "[Название] номер"
 
-    if full_data is None:
-        return None
+    Returns:
+        Маскированную строку
 
-    if not isinstance(full_data, str):
-        return full_data
-    mask_digits = "".join([char for char in full_data if char.isdigit()])
+    Raises:
+        TypeError: Если вход не строка
+        ValueError: Если номер не соответствует требованиям
+    """
+    if not isinstance(data, str):
+        raise TypeError("Только строковый ввод")
 
-    if "счет" in full_data.lower():
-        # Обработка счета
+    # Удаляем лишние пробелы и разделяем на части
+    cleaned_data = ' '.join(data.split())
+    parts = cleaned_data.split()
 
-        if len(mask_digits) < 4:
+    if not parts:
+        raise ValueError("Пустой ввод")
+
+    # Определяем тип данных (карта или счет)
+    is_account = "Счет" in cleaned_data
+
+    # Извлекаем номер (последняя часть после разделения)
+    number = parts[-1] if parts else ""
+
+    if is_account:
+        # Валидация счета
+        if len(parts) < 2:
+            raise ValueError("Отсутствует номер счета")
+        if len(number) < 4 or not number.isdigit():
             raise ValueError("Номер счета должен содержать минимум 4 цифры")
-        masked_number = get_mask_account(mask_digits)
-        # Сохраняем оригинальное название "Счет"
-        account_prefix = "Счет"
-        for word in full_data.split():
-            if word.lower() == "счет":
-                account_prefix = word
-                break
-
-        return f"{account_prefix} {masked_number}"
+        return f"Счет **{number[-4:]}"
     else:
-        # Обработка карты
-        if len(mask_digits) != 16:
+        # Валидация карты
+        if len(number) != 16 or not number.isdigit():
             raise ValueError("Номер карты должен содержать 16 цифр")
 
-        masked_number = get_mask_card_number(mask_digits)
-
-        # Сохраняем оригинальное название карты
-        card_name = " ".join([word for word in full_data.split() if not word.isdigit()])
-
-        return f"{card_name} {masked_number}"
+        # Форматирование карты
+        name = ' '.join(parts[:-1]) if len(parts) > 1 else ''
+        masked_number = f"{number[:4]} {number[4:6]}** **** {number[-4:]}"
+        return f"{name} {masked_number}" if name else masked_number
 
 
-def get_date_safe(iso_date_str: str | None) -> str | None:
-    if iso_date_str is None:
-        return None
-
+def get_date_safe(date_str: str | None) -> str | None:
+    if not isinstance(date_str, str):
+        return date_str
     try:
-        date_obj = datetime.fromisoformat(iso_date_str)
-        return date_obj.strftime("%d.%m.%Y")
-    except (ValueError, TypeError):
-        return iso_date_str
+        return datetime.fromisoformat(date_str).strftime("%d.%m.%Y")
+    except ValueError:
+        return date_str
