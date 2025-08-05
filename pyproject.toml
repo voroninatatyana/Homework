@@ -2,14 +2,14 @@
 name = "homework"
 version = "0.1.0"
 description = "homework_git"
-authors = "dic555@list.ru"
+authors = ["dic555 <dic555@list.ru>"]
 readme = "README.md"
 packages = [
     { include = "masks", from = "src" },
 ]
 
 [tool.poetry.dependencies]
-python = "^3.13"
+python = "^3.9"
 
 
 [tool.poetry.group.lint.dependencies]
@@ -19,19 +19,18 @@ black = "^25.1.0"
 isort = "^6.0.1"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.mypy]
 disallow_untyped_defs = true
 warn_return_any = true
-exclude =.venv
-exclude = "README.md"
+exclude = ".venv"
 
 [tool.black]
 # Максимальная длина строки
 line-length = 119
-exclude = .git
+exclude = ".git"
 
 [tool.isort]
 # максимальная длина строки

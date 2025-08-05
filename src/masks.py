@@ -1,14 +1,27 @@
 
-def get_mask_card_number (card_number: str) -> str:
-    """Маскирует номер банковской карты."""
+def get_mask_card_number (data: str) -> str:
+    """Маскирует номер карты/счета.
+
+    Args:
+        data: Строка с номером карты/счета
+
+    Returns:
+        Маскированную строку
+
+    Raises:
+        TypeError: Если вход не строка
+        ValueError: Если строка слишком короткая
+    """
     # Приводим к строке и удаляем пробелы/дефисы
-    str_number = str(card_number).strip().replace(" ", "").replace("-", "")
+    str_number = str(data).strip().replace(" ", "").replace("-", "")
 
     # Проверяем, что номер состоит из цифр и имеет правильную длину
+    if not isinstance(data, str):
+        raise TypeError(f"Ожидается строка, получено {type(data)}")
+    if len(data) < 16:
+        raise ValueError("Номер карты слишком короткий")
     if not str_number.isdigit():
-        raise ValueError("Номер карты должен содержать только цифры")
-    if len(str_number) != 16:
-        raise ValueError("Номер карты должен содержать 16 цифр")
+        raise TypeError("Номер карты должен содержать цифры")
 
     # Разбиваем на части и маскируем
     first_part = str_number[:4]  # Первые 4 цифры
@@ -17,9 +30,19 @@ def get_mask_card_number (card_number: str) -> str:
 
     return f"{first_part} {second_part}** **** {last_part}"
 
-def get_mask_account ( account_number: str) -> str:
+
+def get_mask_account(data: str | int) -> str:
     """Маскирует номер банковского счета"""
-    str_number = str(account_number)  # На случай, если передано число
-    if len(str_number) < 4:
-        raise ValueError("Номер счета должен содержать минимум 4 цифры")
-    return f"**{str_number[-4:]}"  # Последние 4 цифры с ** в начале
+    if not isinstance(data, (str, int)):
+        raise TypeError("Номер счета должен быть строкой или числом")
+    # Преобразуем в строку и удаляем лишнее
+    str_num = str(data).replace("Счет", "").strip()
+    # Проверяем минимальную длину
+    if len(str_num) < 10:
+        raise ValueError("Номер счета должен содержать минимум 10 цифр")
+    # Оставляем только цифры
+    digits = [c for c in str_num if c.isdigit()]
+    if len(digits) < 10:
+        raise ValueError("Номер счета должен содержать минимум 10 цифр")
+    last_four = "".join(digits)[-4:]
+    return f"**{last_four}"  # Последние 4 цифры с ** в начале
