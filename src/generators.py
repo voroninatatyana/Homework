@@ -1,12 +1,19 @@
 from typing import Dict, List, Iterator
 
 
-def filter_by_currency(transactions: List[Dict[str, str]], currency: str) -> Iterator[Dict[str, str]]:
-    """Фильтрует транзакции по валюте и возвращает итератор."""
+def filter_by_currency(transactions: List[Dict], currency: str) -> Iterator[Dict]:
+    """Фильтрует транзакции по валюте (поддерживает оба формата)."""
 
     for transaction in transactions:
+        # Вариант 1: Простая строка "currency": "USD"
         if transaction.get("currency") == currency:
             yield transaction
+
+        # Вариант 2: Вложенная структура "operationAmount": {"currency": {"code": "USD"}}
+        elif "operationAmount" in transaction:
+            op_amount = transaction["operationAmount"]
+            if isinstance(op_amount.get("currency"), dict) and op_amount["currency"].get("code") == currency:
+                yield transaction
 
 
 def transaction_descriptions(transactions: List[Dict[str, str]]) -> Iterator[str]:

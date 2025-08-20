@@ -130,3 +130,150 @@ def test_parametrized_ranges(start, end, expected_first, expected_last, expected
     assert all(len(num) == 19 for num in numbers)
 
 
+@pytest.fixture
+def mixed_transactions():
+    return [
+        # Простой формат
+        {"id": 1, "currency": "USD", "amount": "100"},
+        {"id": 2, "currency": "EUR", "amount": "200"},
+
+        # Вложенный формат
+        {
+            "id": 3,
+            "operationAmount": {
+                "amount": "300",
+                "currency": {"code": "USD"}
+            }
+        },
+        {
+            "id": 4,
+            "operationAmount": {
+                "amount": "400",
+                "currency": {"code": "RUB"}
+            }
+        }
+    ]
+
+
+@pytest.mark.parametrize("currency, expected_ids", [
+    ("USD", [1, 3]),  # Оба формата USD
+    ("EUR", [2]),  # Простой формат
+    ("RUB", [4]),  # Вложенный формат
+    ("JPY", [])  # Отсутствующая валюта
+])
+def test_filter_mixed_formats(mixed_transactions, currency, expected_ids):
+    result = list(filter_by_currency(mixed_transactions, currency))
+    assert [tx["id"] for tx in result] == expected_ids
+
+
+def test_empty_list():
+    result = list(filter_by_currency([], "USD"))
+    assert result == []
+
+
+# Фикстура с тестовыми данными
+@pytest.fixture
+def sample_transactions():
+    return [
+        {"description": "Перевод организации", "amount": "100", "currency": "USD"},
+        {"description": "Перевод со счета на счет", "amount": "200", "currency": "EUR"},
+        {"description": "Оплата услуг", "amount": "50", "currency": "RUB"},
+        {"description": "Пополнение счета", "amount": "75", "currency": "USD"}
+    ]
+
+
+# Тест 1: Корректность возвращаемых описаний
+def test_returns_correct_descriptions(sample_transactions):
+    """Проверяет, что функция возвращает корректные описания"""
+    # Act
+    result = list(transaction_descriptions(sample_transactions))
+
+    # Assert
+    expected = [
+        "Перевод организации",
+        "Перевод со счета на счет",
+        "Оплата услуг",
+        "Пополнение счета"
+    ]
+    assert result == expected
+
+
+# Тест 2: Работа с разным количеством данных
+@pytest.mark.parametrize("transactions_data, expected_descriptions", [
+    # Множество транзакций
+    ([
+         {"description": "Транзакция 1"},
+         {"description": "Транзакция 2"},
+         {"description": "Транзакция 3"},
+         {"description": "Транзакция 4"},
+         {"description": "Транзакция 5"}
+     ], ["Транзакция 1", "Транзакция 2", "Транзакция 3", "Транзакция 4", "Транзакция 5"]),
+
+    # Одна транзакция
+    ([{"description": "Единственная транзакция"}], ["Единственная транзакция"]),
+
+    # Пустой список
+    ([], []),
+
+    # Транзакции с одинаковыми описаниями
+    ([
+         {"description": "Повтор"},
+         {"description": "Повтор"},
+         {"description": "Повтор"}
+     ], ["Повтор", "Повтор", "Повтор"])
+])
+def test_different_data_volumes(transactions_data, expected_descriptions):
+    """Проверяет работу функции с разным количеством данных"""
+    # Act
+    result = list(transaction_descriptions(transactions_data))
+
+    # Assert
+    assert result == expected_descriptions
+
+
+# Тест 3: Поведение генератора
+def test_generator_behavior(sample_transactions):
+    """Проверяет, что функция возвращает итератор и работает поэлементно"""
+    # Arrange
+    gen = transaction_descriptions(sample_transactions)
+
+    # Assert - проверяем тип
+    assert hasattr(gen, '__iter__')
+    assert hasattr(gen, '__next__')
+
+    # Act & Assert - проверяем поэлементную работу
+    assert next(gen) == "Перевод организации"
+    assert next(gen) == "Перевод со счета на счет"
+    assert next(gen) == "Оплата услуг"
+    assert next(gen) == "Пополнение счета"
+
+    # Проверяем завершение генератора
+    with pytest.raises(StopIteration):
+        next(gen)
+
+
+# Тест 4: Пустой список (отдельный тест для ясности)
+def test_empty_list():
+    """Проверяет работу с пустым списком транзакций"""
+    result = list(transaction_descriptions([]))
+    assert result == []
+
+
+# Тест 5: Проверка на отсутствие ошибок с минимальными данными
+def test_minimal_transaction():
+    """Проверяет работу с транзакцией, содержащей только описание"""
+    transactions = [{"description": "Минимальная транзакция"}]
+    result = list(transaction_descriptions(transactions))
+    assert result == ["Минимальная транзакция"]
+
+
+# Тест 6: Проверка порядка возвращаемых описаний
+def test_order_preservation(sample_transactions):
+    """Проверяет, что порядок описаний соответствует порядку транзакций"""
+    result = list(transaction_descriptions(sample_transactions))
+
+    # Порядок должен сохраняться
+    assert result[0] == "Перевод организации"
+    assert result[1] == "Перевод со счета на счет"
+    assert result[2] == "Оплата услуг"
+    assert result[3] == "Пополнение счета"
