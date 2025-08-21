@@ -23,6 +23,13 @@
 ### 6. Форматирование любого номера
 #### format_payment_info(info: str) -> str
 Автоматически определяет (счет или карта) и форматирует номер.
+### 7. Фильтрование списка транзакций по заданной валюте
+#### filter_by_currency(transactions, currency)
+### 8. Генерирует описания транзакций одну за другой.
+#### transaction_descriptions(transactions)
+#### параметры: transactions (List[Dict]): Список словарей с транзакциями
+### 9. Генерирует номера банковских карт в заданном диапазоне
+#### card_number_generator(start, end)
 ## Установка
 1. Склонируйте [репозиторий](git@github.com:voroninatatyana/Homework.git)
 2. Установите зависимости:
