@@ -1,7 +1,6 @@
 import pytest
-import os
-from datetime import datetime
-from your_module import log  # Импортируем декоратор из вашего файла
+import functools
+from src.decorators import log
 
 
 # Тестовые функции для декорирования
